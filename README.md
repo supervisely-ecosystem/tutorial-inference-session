@@ -187,7 +187,7 @@ inference_session = sly.nn.inference.Session(api, task_id=your_task_id, inferenc
 
 ### Session info
 
-Each app with a deployed model has its own unique task_id (or session_id which is the same), model_name, pretrained_dataset and other useful info that can be obtained with the `get_session_info()` method.
+Each app with a deployed model has its own unique **task_id** (or **session_id** which is the same), **model_name**, **pretrained_dataset** and other useful info that can be obtained with the `get_session_info()` method.
 
 
 ```python
@@ -216,7 +216,7 @@ inference_session.get_session_info()
 
 ### Project meta of the model
 
-The model may be pretrained on various datasets, like a COCO, ImageNet or even your custom data. The datasets are different in classes/tags they have. Therefore each dataset has its own meta information called `project_meta` in Supervisely. To get the `project_meta` of the dataset the model was pretrained on, use the method `get_model_project_meta()`.
+The model may be pretrained on various datasets, like a **COCO**, **ImageNet** or even your **custom data**. The datasets are different in classes/tags they have. Therefore each dataset has its own meta information called `project_meta` in Supervisely. To get the `project_meta` of the dataset the model was pretrained on, use the method `get_model_project_meta()`.
 
 
 ```python
