@@ -26,8 +26,6 @@ This class is a convenient wrapper for a low-level API. It under the hood is jus
     + [Upload prediction to dataset in Supervisely](#upload-prediction-to-dataset-in-supervisely)
   * [4. Video Inference](#4-video-inference)
     + [Method 1. Inferring video with iterator](#method-1-inferring-video-with-iterator)
-      - [Getting more information about the inference process:](#getting-more-information-about-the-inference-process)
-      - [Stop async video inference with](#stop-async-video-inference-with)
     + [Method 2. Inferring video without iterator](#method-2-inferring-video-without-iterator)
 
 
