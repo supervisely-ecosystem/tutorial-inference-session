@@ -5,6 +5,9 @@
 In this tutorial, you will learn how to infer deployed models in a simple and efficient way with `sly.nn.inference.Session`.
 This class is a convenient wrapper for a low-level API. It under the hood is just a communication with the serving app via `requests`.
 
+Try it with Colab: [![Open in colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/supervisely-ecosystem/tutorial-inference-session/blob/master/nn_inference_tutorial_colab.ipynb)
+
+
 **Table of Contents**:
 
 - [Inference Session API](#inference-session-api)
