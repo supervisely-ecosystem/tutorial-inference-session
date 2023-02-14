@@ -162,7 +162,7 @@ load_dotenv(os.path.expanduser("~/supervisely.env"))
 api = sly.Api()
 ```
 
-**Create an InferenceSession connection to the model:**
+**Create an Inference Session connection with the model:**
 
 
 ```python
@@ -173,7 +173,7 @@ task_id = 27209
 inference_session = sly.nn.inference.Session(api, task_id=task_id)
 ```
 
-**Pass the inference settings** *(Optional, you can set it later or use default)*:
+**You can pass the inference settings in init:** *(Optional, you also can set it later or use default)*:
 
 
 ```python
@@ -184,7 +184,7 @@ inference_settings = {
 inference_session = sly.nn.inference.Session(api, task_id=your_task_id, inference_settings=inference_settings)
 ```
 
-**Or pass the inference settings by** `YAML` **file**:
+**Or with a** `YAML` **file**:
 
 
 ```python
