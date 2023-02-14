@@ -64,11 +64,11 @@ load_dotenv(os.path.expanduser("~/supervisely.env"))
 api = sly.Api()
 
 # Create Inference Session
-inference_session = sly.nn.inference.Session(api, task_id=task_id, inference_settings={"conf_thres": 0.55})
+session = sly.nn.inference.Session(api, task_id=task_id)
 
 # Infer image_id
 image_id = 19386161
-prediction = inference_session.inference_image_id(image_id)
+prediction = session.inference_image_id(image_id)
 prediction["annotation"]
 ```
 
@@ -107,20 +107,20 @@ prediction["annotation"]
 
 ```python
 # Infer single image by local path
-pred = inference_session.inference_image_path("image_01.jpg")
+pred = session.inference_image_path("image_01.jpg")
 
 # Infer batch of images by local paths
-pred = inference_session.inference_image_paths(["image_01.jpg", "image_02.jpg"])
+pred = session.inference_image_paths(["image_01.jpg", "image_02.jpg"])
 
 # Infer image by ID
-pred = inference_session.inference_image_id(17551748)
+pred = session.inference_image_id(17551748)
 
 # Infer batch of images by IDs
-pred = inference_session.inference_image_ids([17551748, 17551750])
+pred = session.inference_image_ids([17551748, 17551750])
 
 # Infer image by url
 url = "https://images.unsplash.com/photo-1674552791148-c756b0899dba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80"
-pred = inference_session.inference_image_url(url)
+pred = session.inference_image_url(url)
 ```
 
 ### Video inference methods:
@@ -132,11 +132,11 @@ from tqdm import tqdm
 video_id = 18635803
 
 # Infer video getting each frame as soon as it's ready
-for frame_pred in tqdm(inference_session.inference_video_id_async(video_id)):
+for frame_pred in tqdm(session.inference_video_id_async(video_id)):
     print(frame_pred["annotation"]["objects"])
 
 # Infer video without iterator
-pred = inference_session.inference_video_id(video_id)
+pred = session.inference_video_id(video_id)
 ```
 
 # A Complete Tutorial
@@ -169,8 +169,8 @@ api = sly.Api()
 # Get your Serving App's task_id from the Supervisely platform
 task_id = 27209
 
-# create an inference_session
-inference_session = sly.nn.inference.Session(api, task_id=task_id)
+# create session
+session = sly.nn.inference.Session(api, task_id=task_id)
 ```
 
 **You can pass the inference settings in init:** *(Optional, you also can set it later or use default)*:
@@ -181,7 +181,7 @@ inference_session = sly.nn.inference.Session(api, task_id=task_id)
 inference_settings = {
     "conf_thres": 0.45
 }
-inference_session = sly.nn.inference.Session(api, task_id=your_task_id, inference_settings=inference_settings)
+session = sly.nn.inference.Session(api, task_id=your_task_id, inference_settings=inference_settings)
 ```
 
 **Or with a** `YAML` **file**:
@@ -189,7 +189,7 @@ inference_session = sly.nn.inference.Session(api, task_id=your_task_id, inferenc
 
 ```python
 inference_settings_yaml = "settings.yml"
-inference_session = sly.nn.inference.Session(api, task_id=your_task_id, inference_settings=inference_settings_yaml)
+session = sly.nn.inference.Session(api, task_id=your_task_id, inference_settings=inference_settings_yaml)
 ```
 
 ## 2. Get the model info
@@ -200,7 +200,7 @@ Each app with a deployed model has its own unique **task_id** (or **session_id**
 
 
 ```python
-inference_session.get_session_info()
+session.get_session_info()
 ```
 
 
@@ -229,12 +229,12 @@ The model may be pretrained on various datasets, like a **COCO**, **ImageNet** o
 
 
 ```python
-model_meta = inference_session.get_model_meta()
-print("The first 10 classes of model_meta:")
+model_meta = session.get_model_meta()
+print("The first 10 classes of the model_meta:")
 [cls.name for cls in model_meta.obj_classes][:10]
 ```
 
-    The first 10 classes of model_meta:
+    The first 10 classes of the model_meta:
 
     ['person',
      'bicycle',
@@ -257,7 +257,7 @@ Each model has its own inference settings, like a `conf_thres`, `iou_thres` and 
 
 
 ```python
-default_settings = inference_session.get_default_inference_settings()
+default_settings = session.get_default_inference_settings()
 default_settings
 ```
 
@@ -273,51 +273,51 @@ default_settings
 
 ### Set the inference settings
 
-You can set these settings with the one of the methods:
+**There are 3 ways to set the inference settings:**
 - `update_inference_settings(**kwargs)`
-- `set_inference_settings(dict_or_yaml)`
+- `set_inference_settings(dict)`
+- `set_inference_settings(YAML)`
 
-**Update only the parameters you want:**
+Also you can pass it earlier at creating the `Session`.
 
+**a) Update only the parameters you need:**
 
 ```python
-inference_session.update_inference_settings(conf_thres=0.4, iou_thres=0.55)
-inference_session.inference_settings
+session.update_inference_settings(conf_thres=0.4, iou_thres=0.55)
+session.inference_settings
 ```
 
-
-
+Output:
 
     {'conf_thres': 0.4, 'iou_thres': 0.55}
 
 
 
-**Set parameters with a dict:**
+**b) Set parameters with a dict:**
 
 
 ```python
 settings = {
     "conf_thres": 0.25
 }
-inference_session.set_inference_settings(settings)
-inference_session.inference_settings
+session.set_inference_settings(settings)
+session.inference_settings
 ```
 
-
-
+Output:
 
     {'conf_thres': 0.25}
 
 
+**c) Set parameters with a `YAML` file:**
 
 
 ```python
-inference_session.set_inference_settings("settings.yml")
-inference_session.inference_settings
+session.set_inference_settings("settings.yml")
+session.inference_settings
 ```
 
-
-
+Output:
 
     {'conf_thres': 0.55, 'augment': False}
 
@@ -334,14 +334,14 @@ inference_session.inference_settings
 
 ```python
 # Infer image by local path
-pred = inference_session.inference_image_path("image_01.jpg")
+pred = session.inference_image_path("image_01.jpg")
 
 # Infer image by ID
-pred = inference_session.inference_image_id(image_id=17551748)
+pred = session.inference_image_id(image_id=17551748)
 
 # Infer image by url
 url = "https://images.unsplash.com/photo-1674552791148-c756b0899dba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80"
-pred = inference_session.inference_image_url(url)
+pred = session.inference_image_url(url)
 ```
 
 **And you can also infer a batch of images:**
@@ -349,10 +349,10 @@ pred = inference_session.inference_image_url(url)
 
 ```python
 # Infer batch of images by local paths
-pred = inference_session.inference_image_paths(["image_01.jpg", "image_02.jpg"])
+pred = session.inference_image_paths(["image_01.jpg", "image_02.jpg"])
 
 # Infer batch of images by IDs
-pred = inference_session.inference_image_ids([17551748, 17551750])
+pred = session.inference_image_ids([17551748, 17551750])
 ```
 
 ### Inspecting the model prediction
@@ -365,7 +365,7 @@ The prediction is a `dict` with two fields:
 
 ```python
 image_id = 19386163
-pred = inference_session.inference_image_id(image_id)
+pred = session.inference_image_id(image_id)
 pred
 ```
 
@@ -408,7 +408,7 @@ pred
 
 
 ```python
-model_meta = inference_session.get_model_meta()
+model_meta = session.get_model_meta()
 predicted_annotation = sly.Annotation.from_json(pred["annotation"], project_meta=model_meta)
 ```
 
@@ -496,7 +496,7 @@ from tqdm import tqdm
 
 video_id = 18635803
 
-for frame_ann in tqdm(inference_session.inference_video_id_async(video_id)):
+for frame_ann in tqdm(session.inference_video_id_async(video_id)):
     print(frame_ann)
 ```
 
@@ -512,7 +512,7 @@ There are some parameters can be passed to the video inference:
 ```python
 video_id = 18635803
 
-frame_iterator = inference_session.inference_video_id_async(video_id)
+frame_iterator = session.inference_video_id_async(video_id)
 total_frames = len(frame_iterator)
 for i, frame_ann in enumerate(frame_iterator):
     labels = sly.Annotation.from_json(frame_ann['annotation'], model_meta).labels
@@ -538,7 +538,7 @@ for i, frame_ann in enumerate(frame_iterator):
 
 #### Stop video inference
 
-If you need to stop the inference, use `inference_session.stop_async_inference()`:
+If you need to stop the inference, use `session.stop_async_inference()`:
 
 
 ```python
@@ -546,9 +546,9 @@ from tqdm import tqdm
 
 video_id = 18635803
 
-for i, frame_ann in enumerate(tqdm(inference_session.inference_video_id_async(video_id))):
+for i, frame_ann in enumerate(tqdm(session.inference_video_id_async(video_id))):
     if i == 2:
-        inference_session.stop_async_inference()
+        session.stop_async_inference()
 ```
 
     {"message": "The video is preparing on the server, this may take a while...", "timestamp": "2023-02-09T23:15:47.232Z", "level": "info"}
@@ -565,7 +565,7 @@ If you don't need to iterate every frame, you can use the `inference_video_id` m
 ```python
 video_id = 18635803
 
-predictions_list = inference_session.inference_video_id(
+predictions_list = session.inference_video_id(
     video_id, start_frame_index=5, frames_count=15, frames_direction="forward"
 )
 ```
