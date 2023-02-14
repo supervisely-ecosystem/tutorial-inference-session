@@ -1,19 +1,25 @@
-# Inference Session API
+# Inference API
 
 ## Introduction
 
-In this tutorial, you will learn how to infer deployed models in a simple and efficient way with `sly.nn.inference.Session`.
+**There are two ways how you can infer your models:**
+- From Supervisely platform with the APPs like [Apply NN to Images](https://ecosystem.supervise.ly/apps/nn-image-labeling/project-dataset) and [Apply Classifier to Images](https://ecosystem.supervise.ly/apps/apply-classification-model-to-project).
+- Right from your code.
+
+In this tutorial, you'll learn how to infer deployed models **from your code** with the `sly.nn.inference.Session` class.
 This class is a convenient wrapper for a low-level API. It under the hood is just a communication with the serving app via `requests`.
 
+**Before starting you have to deploy your model with a Serving App (e.g. [Serve YOLOv5](https://ecosystem.supervise.ly/apps/yolov5/supervisely/serve))**
+
 Try it with Colab: 
-<a target="_blank" href="https://colab.research.google.com/github/https://colab.research.google.com/github/supervisely-ecosystem/tutorial-inference-session/blob/master/nn_inference_tutorial_colab.ipynb">
+<a target="_blank" href="https://colab.research.google.com/github/supervisely-ecosystem/tutorial-inference-session/blob/master/nn_inference_tutorial_colab.ipynb">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 </a>
 
 
 **Table of Contents**:
 
-- [Inference Session API](#inference-session-api)
+- [Inference API](#inference-api)
   * [Introduction](#introduction)
 - [Quick overview](#quick-overview)
   * [List of all inference methods](#list-of-all-inference-methods)
@@ -219,20 +225,16 @@ inference_session.get_session_info()
 
 ### Project meta of the model
 
-The model may be pretrained on various datasets, like a **COCO**, **ImageNet** or even your **custom data**. The datasets are different in classes/tags they have. Therefore each dataset has its own meta information called `project_meta` in Supervisely. To get the `project_meta` of the dataset the model was pretrained on, use the method `get_model_project_meta()`.
+The model may be pretrained on various datasets, like a **COCO**, **ImageNet** or even your **custom data**. Datasets are different in classes/tags they have. Therefore each dataset has its own meta information called `project_meta` in Supervisely. The model also contains this information and it's called `model_meta`. You can get the `model_meta` with method `get_model_meta()`:
 
 
 ```python
-model_meta = inference_session.get_model_project_meta()
+model_meta = inference_session.get_model_meta()
 print("The first 10 classes of model_meta:")
 [cls.name for cls in model_meta.obj_classes][:10]
 ```
 
     The first 10 classes of model_meta:
-    
-
-
-
 
     ['person',
      'bicycle',
@@ -406,11 +408,11 @@ pred
 
 
 ```python
-model_project_meta = inference_session.get_model_project_meta()
-predicted_annotation = sly.Annotation.from_json(pred["annotation"], project_meta=model_project_meta)
+model_meta = inference_session.get_model_meta()
+predicted_annotation = sly.Annotation.from_json(pred["annotation"], project_meta=model_meta)
 ```
 
-**Note:** since the prediction contains only class name and coordinates of rectangle for each object, which is not enough to interpret the annotation in Supervisely format correctly, we need to pass the `model_project_meta` too.
+**Note:** since the prediction contains only class name and coordinates of rectangle for each object, which is not enough to interpret the annotation in Supervisely format correctly, we need to pass the `model_meta` too.
 
 ### Visualize model prediction
 
@@ -427,7 +429,7 @@ image_np = sly.image.read(save_path)
 
 ```python
 # Convert to sly.Annotation
-predicted_annotation = sly.Annotation.from_json(pred["annotation"], model_project_meta)
+predicted_annotation = sly.Annotation.from_json(pred["annotation"], model_meta)
 
 # Draw the annotation and save it to disk
 save_path_predicted = "demo_image_pred.jpg"
@@ -460,7 +462,7 @@ project_info = api.project.create(workspace_id, "My model predictions", change_n
 dataset_info = api.dataset.create(project_info.id, "First dataset")
 
 # Update project meta with model's classes
-api.project.update_meta(project_info.id, model_project_meta)
+api.project.update_meta(project_info.id, model_meta)
 project_meta = api.project.get_meta(project_info.id)
 project_meta = sly.ProjectMeta.from_json(project_meta)
 
@@ -474,6 +476,11 @@ api.annotation.upload_ann(img_info.id, predicted_annotation)
 ```
 
 **Note:** when you update the `project_meta`, you need to get a newly generated `project_meta` back, because there will be new ids assigned to the classes and tags.
+
+
+**Result on the Supervisely platform:**
+
+![result](https://user-images.githubusercontent.com/31512713/218533323-47ce4ee0-a2e2-480d-bfc0-06caa21ccc8a.png)
 
 ## 4. Video Inference
 
@@ -508,7 +515,7 @@ video_id = 18635803
 frame_iterator = inference_session.inference_video_id_async(video_id)
 total_frames = len(frame_iterator)
 for i, frame_ann in enumerate(frame_iterator):
-    labels = sly.Annotation.from_json(frame_ann['annotation'], model_project_meta).labels
+    labels = sly.Annotation.from_json(frame_ann['annotation'], model_meta).labels
     predicted_classes = [x.obj_class.name for x in labels]
     print(f"Frame {i+1}/{total_frames} done. Predicted classes = {predicted_classes}")
 ```
@@ -529,7 +536,7 @@ for i, frame_ann in enumerate(frame_iterator):
     Frame 10/10 done. Predicted classes = ['car']
     
 
-#### Stop async video inference with
+#### Stop video inference
 
 If you need to stop the inference, use `inference_session.stop_async_inference()`:
 
