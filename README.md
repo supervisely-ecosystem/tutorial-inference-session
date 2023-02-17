@@ -109,7 +109,7 @@ plt.imshow(image_pred)
 plt.axis('off');
 ```
 
-![vis_prediction](https://user-images.githubusercontent.com/31512713/218431952-6183b5b0-19cc-4ba0-9ff9-0493b0bb4424.png)
+![Image with predictions of the YOLOv5 model](https://user-images.githubusercontent.com/31512713/218431952-6183b5b0-19cc-4ba0-9ff9-0493b0bb4424.png)
 
 
 ## List of all inference methods
@@ -157,7 +157,7 @@ pred = session.inference_video_id(video_id)
 
 First serve the model you want (e.g. [Serve YOLOv5](https://ecosystem.supervise.ly/apps/yolov5/supervisely/serve)) and copy the `task_id` from the `App sessions` section in the Supervisely platform:
 
-![getting-task-id](https://user-images.githubusercontent.com/31512713/218194505-b161be1e-5a05-488b-8eb7-9bc0f24141e2.png)
+![Copy the Task ID here](https://user-images.githubusercontent.com/31512713/218194505-b161be1e-5a05-488b-8eb7-9bc0f24141e2.png)
 
 **Init your sly.Api:**
 
@@ -420,7 +420,7 @@ plt.imshow(image_pred)
 plt.axis('off');
 ```
 
-![vis_prediction](https://user-images.githubusercontent.com/31512713/218431952-6183b5b0-19cc-4ba0-9ff9-0493b0bb4424.png)
+![Image with predictions of the YOLOv5 model](https://user-images.githubusercontent.com/31512713/218431952-6183b5b0-19cc-4ba0-9ff9-0493b0bb4424.png)
 
 
 ### Upload prediction to the Supervisely platform
@@ -451,7 +451,7 @@ api.annotation.upload_ann(img_info.id, prediction)
 
 **Result on the Supervisely platform:**
 
-![result](https://user-images.githubusercontent.com/31512713/218533323-47ce4ee0-a2e2-480d-bfc0-06caa21ccc8a.png)
+![Result in the Supervisely Labeling Tool](https://user-images.githubusercontent.com/31512713/218533323-47ce4ee0-a2e2-480d-bfc0-06caa21ccc8a.png)
 
 ## 4. Video Inference
 
